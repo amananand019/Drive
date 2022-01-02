@@ -2,8 +2,10 @@
   let btnAddFolder = document.querySelector("#btnAddFolder");
   let divContainer = document.querySelector("#divContainer");
   let pageTemplates = document.querySelector("#pageTemplates");
-  let fid = 0;
+  let divBreadCrumb = document.querySelector("#divBreadCrumb");
+  let fid = -1;
   let folders = [];
+  let cfid = -1; //id of the folder in which we currently are
 
   btnAddFolder.addEventListener("click", addFolder);
 
@@ -15,23 +17,26 @@
       return;
     }
 
-    let exists = folders.some((f) => f.name == fname);
+    let exists = folders
+      .filter((f) => f.pid == cfid)
+      .some((f) => f.name == fname);
     if (exists) {
       alert("This folder name already exists");
       return;
     }
 
     fid++;
-    addFolderInPage(fname, fid);
+    addFolderHTML(fname, fid, cfid);
 
     folders.push({
       id: fid,
       name: fname,
+      pid: cfid,
     });
     persistFoldersToStorage();
   }
 
-  function addFolderInPage(fname, fid) {
+  function addFolderHTML(fname, fid, pid) {
     let divFolderTemplate = pageTemplates.content.querySelector(".folder");
     let divFolder = document.importNode(divFolderTemplate, true);
     // The Document object's importNode() method creates a copy of a Node
@@ -42,6 +47,7 @@
     divName.innerHTML = fname;
 
     divFolder.setAttribute("fid", fid);
+    divFolder.setAttribute("pid", pid);
     divContainer.appendChild(divFolder);
 
     let divDel = divFolder.querySelector("[action='delete']");
@@ -49,6 +55,28 @@
 
     let divEdit = divFolder.querySelector("[action='edit']");
     divEdit.addEventListener("click", editFolder);
+
+    let divView = divFolder.querySelector("[action='view']");
+    divView.addEventListener("click", viewFolder);
+  }
+
+  function viewFolder() {
+    let divFolder = this.parentNode;
+    let divName = divFolder.querySelector("[purpose='name']");
+    cfid = parseInt(divFolder.getAttribute("fid"));
+
+    let aPathTemplate = pageTemplates.content.querySelector(".path");
+    let aPath = document.importNode(aPathTemplate, true);
+
+    aPath.innerHTML = divName.innerHTML;
+    divBreadCrumb.appendChild(aPath);
+
+    divContainer.innerHTML = "";
+    folders
+      .filter((f) => f.pid == cfid)
+      .forEach((f) => {
+        addFolderHTML(f.name, f.id, f.pid);
+      });
   }
 
   function editFolder() {
@@ -59,12 +87,14 @@
     let nname = prompt("New folder name for " + divName.innerHTML);
     if (!!nname) {
       if (nname != oname) {
-        let exists = folders.some((f) => f.name == nname);
+        let exists = folders
+          .filter((f) => f.pid == cfid)
+          .some((f) => f.name == nname);
         if (exists == false) {
           divName.innerHTML = nname;
-          let folder = folders.find(
-            (f) => f.id == parseInt(divFolder.getAttribute("fid"))
-          );
+          let folder = folders
+            .filter((f) => f.pid == cfid)
+            .find((f) => f.id == parseInt(divFolder.getAttribute("fid")));
           folder.name = nname;
           persistFoldersToStorage();
         } else {
@@ -85,9 +115,9 @@
     let flag = confirm("Do you want to delete " + divName.innerHTML + "?");
     if (flag) divContainer.removeChild(divFolder);
 
-    let idx = folders.findIndex(
-      (f) => f.id == parseInt(divFolder.getAttribute("fid"))
-    );
+    let idx = folders
+      .filter((f) => f.pid == cfid)
+      .findIndex((f) => f.id == parseInt(divFolder.getAttribute("fid")));
     folders.splice(idx, 1);
     persistFoldersToStorage();
   }
@@ -104,7 +134,7 @@
       folders = JSON.parse(fjson);
       let max = -1;
       folders.forEach(function (f) {
-        addFolderInPage(f.name, f.id);
+        if (f.pid == cfid) addFolderHTML(f.name, f.id);
         if (f.id > max) max = f.id;
       });
       fid = max;
