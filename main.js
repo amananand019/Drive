@@ -60,6 +60,22 @@
     divView.addEventListener("click", viewFolder);
   }
 
+  function navigateBreadCrumb() {
+    let fname = this.innerHTML;
+    cfid = parseInt(this.getAttribute("fid"));
+
+    divContainer.innerHTML = "";
+    folders
+      .filter((f) => f.pid == cfid)
+      .forEach((f) => {
+        addFolderHTML(f.name, f.id, f.pid);
+      });
+
+    while (this.nextSibling) {
+      this.parentNode.removeChild(this.nextSibling);
+    }
+  }
+
   function viewFolder() {
     let divFolder = this.parentNode;
     let divName = divFolder.querySelector("[purpose='name']");
@@ -111,15 +127,21 @@
   function deleteFolder() {
     let divFolder = this.parentNode;
     let divName = divFolder.querySelector("[purpose='name']");
-
+    let fidtbd = divFolder.getAttribute("fid");
     let flag = confirm("Do you want to delete " + divName.innerHTML + "?");
-    if (flag) divContainer.removeChild(divFolder);
-
-    let idx = folders
-      .filter((f) => f.pid == cfid)
-      .findIndex((f) => f.id == parseInt(divFolder.getAttribute("fid")));
-    folders.splice(idx, 1);
-    persistFoldersToStorage();
+    if (flag) {
+      let exists = folders.some((f) => f.pid == fidtbd);
+      if (exists == false) {
+        divContainer.removeChild(divFolder);
+        let idx = folders
+          .filter((f) => f.pid == cfid)
+          .findIndex((f) => f.id == parseInt(divFolder.getAttribute("fid")));
+        folders.splice(idx, 1);
+        persistFoldersToStorage();
+      } else {
+        alert("Can't delete has children");
+      }
+    }
   }
 
   function persistFoldersToStorage() {
