@@ -3,12 +3,13 @@
   let divContainer = document.querySelector("#divContainer");
   let pageTemplates = document.querySelector("#pageTemplates");
   let divBreadCrumb = document.querySelector("#divBreadCrumb");
+  let aRootPath = document.querySelector(".path");
   let fid = -1;
   let folders = [];
   let cfid = -1; //id of the folder in which we currently are
 
   btnAddFolder.addEventListener("click", addFolder);
-
+  aRootPath.addEventListener("click", navigateBreadCrumb);
   loadFoldersFromStorage();
 
   function addFolder() {
@@ -85,6 +86,8 @@
     let aPath = document.importNode(aPathTemplate, true);
 
     aPath.innerHTML = divName.innerHTML;
+    aPath.setAttribute("fid", cfid);
+    aPath.addEventListener("click", navigateBreadCrumb);
     divBreadCrumb.appendChild(aPath);
 
     divContainer.innerHTML = "";
@@ -132,14 +135,17 @@
     if (flag) {
       let exists = folders.some((f) => f.pid == fidtbd);
       if (exists == false) {
+        // ram
+        let fidx = folders.findIndex((f) => f.pid == fidtbd);
+        folders.splice(fidx, 1);
+
+        // html
         divContainer.removeChild(divFolder);
-        let idx = folders
-          .filter((f) => f.pid == cfid)
-          .findIndex((f) => f.id == parseInt(divFolder.getAttribute("fid")));
-        folders.splice(idx, 1);
+
+        //storage
         persistFoldersToStorage();
       } else {
-        alert("Can't delete has children");
+        alert("Can't delete. Has children");
       }
     }
   }
@@ -154,12 +160,15 @@
     let fjson = localStorage.getItem("data");
     if (!!fjson) {
       folders = JSON.parse(fjson);
-      let max = -1;
-      folders.forEach(function (f) {
-        if (f.pid == cfid) addFolderHTML(f.name, f.id);
-        if (f.id > max) max = f.id;
+      folders.forEach((f) => {
+        if (f.id > fid) {
+          fid = f.id;
+        }
+
+        if (f.pid === cfid) {
+          addFolderHTML(f.name, f.id, cfid);
+        }
       });
-      fid = max;
     }
   }
 })();
