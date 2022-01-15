@@ -1,56 +1,73 @@
-#btnAddFolder {
-  border-radius: 5px;
-  background-color: rgb(220, 255, 255);
-  width: 200px;
-  margin-left: 600px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  padding: 10px;
-  transition: 0.2s ease-in-out 0s;
-}
-
-#btnAddFolder:hover {
-  cursor: pointer;
-  transform: scale(1.1);
-  color: #000;
-}
-
-#divBreadCrumb {
+#header {
   border: 1px solid black;
+  margin: 10px;
+  padding: 10px;
   display: flex;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  justify-content: center;
 }
 
-.path {
+#header button {
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 10px;
+  margin-inline: 20px;
   cursor: pointer;
+  background-color: antiquewhite;
+  transition: 0.13s ease-in-out 0s;
+  border: 2px solid deeppink;
+}
 
-  background-color: gray;
-  color: black;
+#header button:hover {
+  transform: scale(1.15);
+  background-color: deeppink;
+  color: white;
+  border: 0px;
+}
 
+#breadcrumb {
+  border: 1px solid red;
+  margin: 10px;
+  display: flex;
+}
+
+#breadcrumb a {
+  background-color: tomato;
   padding: 10px;
   border-right: 3px solid black;
+  cursor: pointer;
 }
 
-.path:hover {
-  background-color: white;
-  color: blue;
-  text-decoration: underline;
+#breadcrumb a:hover {
+  background-color: lightsalmon;
 }
 
-#divContainer {
-  border: 1px solid purple;
+#container {
+  border: 1px solid black;
+  margin: 10px;
+  padding: 10px;
   display: flex;
-  margin-top: 10px;
+}
+
+#app {
+  border: 1px solid red;
+  margin: 10px;
+  padding: 10px;
 }
 
 .folder {
-  background-color: beige;
-  border-radius: 5px;
-  height: 100px;
-  width: 100px;
-  padding: 10px;
+  background-color: teal;
+  color: white;
+  height: 120px;
+  width: 150px;
   margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 2px solid red;
+}
+
+.folder div[purpose="name"] {
+  margin-top: 80px;
 }
 
 .folder [action] {
@@ -58,6 +75,30 @@
   cursor: pointer;
 }
 
-div[purpose="name"] {
-  margin-top: 50px;
+.folder [action]:hover {
+  color: lawngreen;
+}
+
+.text-file {
+  background-color: coral;
+  color: white;
+  height: 120px;
+  width: 150px;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 2px solid red;
+}
+
+.text-file div[purpose="name"] {
+  margin-top: 80px;
+}
+
+.text-file [action] {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.text-file [action]:hover {
+  color: lawngreen;
 }
