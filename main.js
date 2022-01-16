@@ -143,7 +143,29 @@
     resources.splice(ridx, 1);
   }
 
-  function deleteTextFile() {}
+  function deleteTextFile() {
+    let spanDelete = this;
+    let divTextFile = spanDelete.parentNode;
+    let divName = divTextFile.querySelector("[purpose=name]");
+
+    let fidTBD = parseInt(divTextFile.getAttribute("rid"));
+    let fname = divName.innerHTML;
+
+    let sure = confirm(`Are you sure you want to delete ${fname}?`);
+    if (!sure) {
+      return;
+    }
+
+    //html
+    divContainer.removeChild(divTextFile);
+
+    //ram
+    let ridx = resources.findIndex((r) => r.rid == fidTBD);
+    resources.splice(ridx, 1);
+
+    //storage
+    saveToStorage();
+  }
 
   function renameFolder() {
     let nrname = prompt("Enter new folder's name");
@@ -188,7 +210,45 @@
     saveToStorage();
   }
 
-  function renameTextFile() {}
+  function renameTextFile() {
+    let nrname = prompt("Enter file's name");
+    if (nrname != null) {
+      nrname = nrname.trim();
+    }
+
+    if (!nrname) {
+      alert("Empty name is not allowed.");
+      return;
+    }
+
+    let spanRename = this;
+    let divTextFile = spanRename.parentNode;
+    let divName = divTextFile.querySelector("[purpose=name]");
+    let orname = divName.innerHTML;
+    let ridTBU = parseInt(divTextFile.getAttribute("rid"));
+    if (nrname == orname) {
+      alert("Please enter a new name.");
+      return;
+    }
+
+    let alreadyExists = resources.some(
+      (r) => r.rname == nrname && r.pid == cfid
+    );
+    if (alreadyExists == true) {
+      alert(nrname + " already exists.");
+      return;
+    }
+
+    //change html
+    divName.innerHTML = nrname;
+
+    //change ram
+    let resource = resources.find((r) => r.rid == ridTBU);
+    resource.rname = nrname;
+
+    //change storage
+    saveToStorage();
+  }
 
   function viewFolder() {
     let spanView = this;
